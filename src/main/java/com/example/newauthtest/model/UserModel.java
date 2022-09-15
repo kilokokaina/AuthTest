@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
@@ -17,9 +18,10 @@ public class UserModel implements UserDetails {
 
     private String username;
     private String password;
+
     private String loginIp;
 
-    private Long loginDate;
+    private LocalDateTime loginDate;
 
     public UserModel() {}
     public UserModel(String username, String password) {
