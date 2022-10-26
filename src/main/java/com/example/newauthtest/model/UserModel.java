@@ -15,13 +15,16 @@ public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
-
     private String username;
     private String password;
 
     private String loginIp;
-
     private LocalDateTime loginDate;
+
+    private String resetPasswordUUID;
+
+    private Long telegramBotChatId;
+    private boolean status2FA;
 
     public UserModel() {}
     public UserModel(String username, String password) {

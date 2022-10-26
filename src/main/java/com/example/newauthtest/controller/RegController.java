@@ -30,6 +30,6 @@ public class RegController {
         UserModel user = new UserModel(username, password);
         userService.save(user);
 
-        return "redirect:/login";
+        return "redirect:/";
     }
 }

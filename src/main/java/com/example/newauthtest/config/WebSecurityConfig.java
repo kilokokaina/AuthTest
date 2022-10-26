@@ -17,7 +17,8 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
-                        .antMatchers("/", "/home", "/reg", "/auth").permitAll()
+                        .antMatchers("/", "/home", "/reg",
+                                "/auth", "/reset_password/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)

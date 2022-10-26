@@ -1,7 +1,9 @@
 package com.example.newauthtest.controller;
 
 import com.example.newauthtest.DTO.CredentialsDTO;
+import com.example.newauthtest.model.UserModel;
 import com.example.newauthtest.service.impl.AuthenticationManagerImpl;
+import com.example.newauthtest.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,21 +11,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @Controller
 public class CustomLoginController {
+    private final UserServiceImpl userService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public CustomLoginController(AuthenticationManagerImpl authenticationManager) {
+    public CustomLoginController(UserServiceImpl userService,
+                                 AuthenticationManagerImpl authenticationManager) {
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
-    @PostMapping("/auth")
+    @PostMapping("auth")
     public @ResponseBody String authPost(@RequestBody CredentialsDTO credentialsDTO) {
         String username = credentialsDTO.username;
         String password = credentialsDTO.password;
@@ -36,5 +41,31 @@ public class CustomLoginController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return "User is Authenticated";
+    }
+
+    @GetMapping("reset_password")
+    public @ResponseBody String resetPassword(
+            @RequestParam(value = "username") String username) {
+        UserModel userFromDB = userService.findByUsername(username);
+        userFromDB.setResetPasswordUUID(
+                UUID.randomUUID().toString()
+        );
+
+        userService.update(userFromDB);
+
+        return userFromDB.getResetPasswordUUID();
+    }
+
+    @GetMapping("reset_password/{UUID}")
+    public @ResponseBody String setNewPassword(@PathVariable(value = "UUID") String linkUUID,
+                                 @RequestParam(value = "new_password") String newPassword) {
+        UserModel userFromDB = userService.findByResetPasswordUUID(linkUUID);
+
+        userFromDB.setPassword(newPassword);
+        userFromDB.setResetPasswordUUID("");
+
+        userService.update(userFromDB);
+
+        return userFromDB.getPassword();
     }
 }

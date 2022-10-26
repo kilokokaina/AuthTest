@@ -4,6 +4,7 @@ import com.example.newauthtest.model.Role;
 import com.example.newauthtest.model.UserModel;
 import com.example.newauthtest.repo.UserRepository;
 import com.example.newauthtest.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +27,13 @@ public record UserServiceImpl(UserRepository userRepository) implements UserServ
         return true;
     }
 
+    public void update(UserModel userModel) {
+        UserModel userFromDB = userRepository.findById(userModel.getUserId()).orElseThrow();
+        BeanUtils.copyProperties(userModel, userFromDB, "user_id");
+
+        userRepository.save(userFromDB);
+    }
+
     @Override
     public Optional<UserModel> findById(Long userId) {
         return userRepository.findById(userId);
@@ -37,7 +45,17 @@ public record UserServiceImpl(UserRepository userRepository) implements UserServ
     }
 
     @Override
+    public UserModel findByResetPasswordUUID(String stringUUID) {
+        return userRepository.findByResetPasswordUUID(stringUUID);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserModel findByChatId(Long chatId) {
+        return userRepository.findByTelegramBotChatId(chatId);
     }
 }
