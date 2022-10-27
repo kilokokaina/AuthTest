@@ -21,4 +21,10 @@ public record StatusServiceImpl(StatusRepository statusRepository) implements St
     public void delete(Long statusId) {
         statusRepository.deleteById(statusId);
     }
+
+    @Override
+    public boolean existByChatId(Long userChatId) {
+        Status2FAModel status2FAModel = findByChatId(userChatId);
+        return status2FAModel == null;
+    }
 }

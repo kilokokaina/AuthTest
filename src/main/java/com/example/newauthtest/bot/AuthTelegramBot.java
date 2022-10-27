@@ -51,7 +51,7 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
             Long userCharId = update.getCallbackQuery().getFrom().getId();
             UserModel userModel = userService.findByChatId(userCharId);
 
-            if (userModel != null) {
+            if (userModel != null && statusService.existByChatId(userCharId)) {
                 Status2FAModel status2FAModel = new Status2FAModel();
 
                 status2FAModel.setUserAnswer2FA(status);
@@ -71,7 +71,9 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
             SendMessage sendMessage = new SendMessage();
 
             sendMessage.setChatId(update.getMessage().getChatId());
-            sendMessage.setText("Hello");
+            sendMessage.setText(String.format("""
+                    Кхм...Вообще я отправляю уведомления, но '%s' - звучит действительно интересно)
+                    """, update.getMessage().getText()));
 
             try {
                 execute(sendMessage);
