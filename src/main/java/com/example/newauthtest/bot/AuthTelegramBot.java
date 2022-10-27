@@ -71,9 +71,7 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
             SendMessage sendMessage = new SendMessage();
 
             sendMessage.setChatId(update.getMessage().getChatId());
-            sendMessage.setText(String.format("""
-                    Кхм...Вообще я отправляю уведомления, но '%s' - звучит действительно интересно)
-                    """, update.getMessage().getText()));
+            sendMessage.setText(String.format(getMessageText(), update.getMessage().getText()));
 
             try {
                 execute(sendMessage);
@@ -107,5 +105,15 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
         inlineKeyboardMarkup.setKeyboard(buttons);
 
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+    }
+
+    public String getMessageText() {
+        String[] phraseArray = {"И слово дня - %s!", "Настроение: %s",
+        "Кхм...Вообще я отправляю уведомления, но '%s' - звучит действительно интересно)",
+        "'%s'\n(С) Мао Цзэдун", "Сделаем вид, что это просто очепятка", "Ок"};
+
+        int randomNumber = (int) (Math.random() * 6);
+
+        return phraseArray[randomNumber];
     }
 }

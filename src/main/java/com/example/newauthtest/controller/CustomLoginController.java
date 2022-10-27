@@ -6,7 +6,6 @@ import com.example.newauthtest.service.impl.AuthenticationManagerImpl;
 import com.example.newauthtest.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Controller
 public class CustomLoginController {
     private final UserServiceImpl userService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManagerImpl authenticationManager;
 
     @Autowired
     public CustomLoginController(UserServiceImpl userService,
@@ -46,26 +45,38 @@ public class CustomLoginController {
     @GetMapping("reset_password")
     public @ResponseBody String resetPassword(
             @RequestParam(value = "username") String username) {
-        UserModel userFromDB = userService.findByUsername(username);
-        userFromDB.setResetPasswordUUID(
-                UUID.randomUUID().toString()
-        );
+        try {
+            UserModel userFromDB = userService.findByUsername(username);
+            userFromDB.setResetPasswordUUID(
+                    UUID.randomUUID().toString()
+            );
 
-        userService.update(userFromDB);
+            userService.update(userFromDB);
 
-        return userFromDB.getResetPasswordUUID();
+            return userFromDB.getResetPasswordUUID();
+        } catch (NullPointerException exception) {
+            exception.printStackTrace();
+        }
+
+        return "nope";
     }
 
     @GetMapping("reset_password/{UUID}")
     public @ResponseBody String setNewPassword(@PathVariable(value = "UUID") String linkUUID,
                                  @RequestParam(value = "new_password") String newPassword) {
-        UserModel userFromDB = userService.findByResetPasswordUUID(linkUUID);
+        try {
+            UserModel userFromDB = userService.findByResetPasswordUUID(linkUUID);
 
-        userFromDB.setPassword(newPassword);
-        userFromDB.setResetPasswordUUID("");
+            userFromDB.setPassword(newPassword);
+            userFromDB.setResetPasswordUUID("");
 
-        userService.update(userFromDB);
+            userService.update(userFromDB);
 
-        return userFromDB.getPassword();
+            return userFromDB.getPassword();
+        } catch (NullPointerException exception) {
+            exception.printStackTrace();
+        }
+
+        return "nope";
     }
 }
