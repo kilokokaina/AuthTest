@@ -60,13 +60,17 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
                 statusService.save(status2FAModel);
             }
 
-            log.info(userCharId.toString());
-            log.info(status);
+            log.info("Chat ID: " + userCharId);
+            log.info("User answer: " + status);
         }
 
         if (update.hasMessage()) {
-            log.info(update.getMessage().getText());
-            log.info(update.getMessage().getChatId().toString());
+            String username = update.getMessage().getFrom().getFirstName() + " " +
+                    update.getMessage().getFrom().getLastName();
+
+            log.info("User: " + username);
+            log.info("User message: " + update.getMessage().getText());
+            log.info("Chat ID: " + update.getMessage().getChatId().toString());
 
             SendMessage sendMessage = new SendMessage();
 
